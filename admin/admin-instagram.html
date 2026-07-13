@@ -7,9 +7,8 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Oswald:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     
-    <!-- Library SweetAlert2 & HTML2Canvas -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
@@ -72,59 +71,41 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* 1. LAYER FOTO UTAMA (Frame Besar Tengah) */
+        /* 1. LAYER FOTO UTAMA (Disesuaikan agar masuk ke DALAM kotak frame) */
         .layer-main-photo {
             position: absolute;
-            top: 21.5%;
-            left: 17%;
-            width: 63.5%;
-            height: 36.5%;
+            top: 26%;         /* Diturunkan agar tidak nabrak hashtag */
+            left: 19.5%;      /* Digeser ke kanan agar masuk bingkai dalam */
+            width: 58%;       /* Diperkecil agar pas dalam kotak */
+            height: 34.5%;    /* Diperpendek agar tidak menutupi tulisan bawah */
             object-fit: cover;
-            border-radius: 8px;
-            transform: rotate(-4.5deg); /* Miring mengikuti frame template */
+            border-radius: 4px; /* Sudut tumpul tipis agar terlihat natural */
+            transform: rotate(-4.5deg); /* Kemiringan frame */
             z-index: 1;
         }
 
         /* 2. LAYER FOTO KEDUA (Frame Kecil Kiri Bawah) */
         .layer-side-photo {
             position: absolute;
-            top: 61%;
-            left: -0.5%;
-            width: 34%;
-            height: 22%;
+            top: 62.5%;
+            left: 1%;
+            width: 29%;
+            height: 19%;
             object-fit: cover;
-            border-radius: 10px;
-            transform: rotate(33deg); /* Miring tajam mengikuti frame bawah */
+            border-radius: 6px;
+            transform: rotate(35deg); /* Kemiringan frame bawah */
             z-index: 2;
         }
 
-        /* 3. LAYER TAGAR (Pita Kiri Atas) */
-        .layer-hashtag {
-            position: absolute;
-            top: 19%;
-            left: 16%;
-            background-color: #8C5E3C; /* Coklat pita menutupi teks asli */
-            color: #FFFFFF;
-            padding: 8px 25px 8px 15px;
-            font-family: 'Oswald', sans-serif;
-            font-weight: 600;
-            font-size: 1.15rem;
-            letter-spacing: 0.5px;
-            transform: rotate(-4.5deg);
-            z-index: 3;
-            /* Memotong ujung kanan agar terlihat seperti pita */
-            clip-path: polygon(0 0, 92% 0, 100% 50%, 92% 100%, 0 100%);
-        }
-
-        /* 4. LAYER JUDUL (Bawah Tengah) */
+        /* 3. LAYER JUDUL (Bawah Tengah, Di Bawah Tulisan Media Satupena) */
         .layer-title {
             position: absolute;
-            top: 66%;
+            top: 72%;
             left: 19%;
-            width: 61%;
-            height: 18%;
+            width: 60%;
+            height: 15%;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Dimulai dari atas ruang kosong */
             justify-content: center;
             text-align: center;
             color: #593C30;
@@ -133,7 +114,7 @@
             line-height: 1.4;
             transform: rotate(-4.5deg);
             z-index: 4;
-            padding: 10px;
+            padding: 5px;
         }
 
         /* === TOMBOL UNDUH === */
@@ -158,14 +139,12 @@
             <div class="header-title">Generator Poster Otomatis</div>
         </header>
 
-        <!-- AREA KENDALI -->
         <div class="form-section">
             
-            <!-- Tombol Paten Latar Belakang -->
             <div class="form-group" style="background: #FFFDE7; border-color: #FFF59D;">
                 <label class="form-label" style="color: #F57F17;">1. Pasang Latar Belakang (Template)</label>
                 <p style="font-size:0.75rem; color:#757575; margin-bottom:8px;">
-                    Unggah gambar template kosong Anda. Sistem akan menyimpannya secara paten untuk penggunaan berikutnya.
+                    Unggah gambar template kosong. Sistem akan menyimpannya secara paten.
                 </p>
                 <button class="btn-upload-template" onclick="document.getElementById('inputTemplate').click()">
                     🖼️ Ubah / Unggah Template Kosong
@@ -174,35 +153,26 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">2. Teks Tagar (Hashtag)</label>
-                <input type="text" id="inputHashtag" class="form-input" value="#LiterasiIndonesia">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">3. Teks Judul Utama</label>
+                <label class="form-label">2. Teks Judul Utama</label>
                 <textarea id="inputTitle" class="form-input" rows="2">Membaca sebagai Kunci Membuka Jendela Dunia</textarea>
             </div>
 
             <div class="form-group">
-                <label class="form-label">4. Foto Utama (Frame Besar Tengah)</label>
+                <label class="form-label">3. Foto Utama (Frame Besar Tengah)</label>
                 <input type="file" id="inputFileMain" class="form-input" accept="image/*">
             </div>
 
             <div class="form-group">
-                <label class="form-label">5. Foto Tambahan (Frame Kiri Bawah)</label>
+                <label class="form-label">4. Foto Tambahan (Frame Kiri Bawah)</label>
                 <input type="file" id="inputFileSide" class="form-input" accept="image/*">
             </div>
         </div>
 
-        <!-- AREA CANVAS / PRATINJAU -->
         <div class="preview-section">
             <label class="form-label" style="color: var(--primary-brown); font-size: 0.95rem; margin-bottom:10px;">Hasil Pratinjau Poster</label>
             
             <div class="poster-wrapper" id="posterRenderArea">
-                <!-- Elemen yang akan ditimpa di atas template -->
                 <img id="imgMain" class="layer-main-photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Q3Y2NjOCI+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWExIDEgMCAwIDAtMSAxdjE0YTEgMSAwIDAgMCAxIDFoMTRhMSAxIDAgMCAwIDEtMVYxaC0ydjZ6bS03LTYgbDMtM2w0IDR2OUgxMnoiLz48L3N2Zz4=" alt="Main">
-                
-                <div id="textHashtag" class="layer-hashtag">#LiterasiIndonesia</div>
                 
                 <img id="imgSide" class="layer-side-photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Q3Y2NjOCI+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWExIDEgMCAwIDAtMSAxdjE0YTEgMSAwIDAgMCAxIDFoMTRhMSAxIDAgMCAwIDEtMVYxaC0ydjZ6bS03LTYgbDMtM2w0IDR2OUgxMnoiLz48L3N2Zz4=" alt="Side">
                 
@@ -225,11 +195,9 @@
         const posterRenderArea = document.getElementById('posterRenderArea');
         const savedTemplate = localStorage.getItem('satuPenaTemplatePaten');
         
-        // Memuat template jika sudah pernah diunggah sebelumnya
         if (savedTemplate) {
             posterRenderArea.style.backgroundImage = `url('${savedTemplate}')`;
         } else {
-            // Instruksi jika belum ada template
             posterRenderArea.style.backgroundColor = "#EFEBE9";
             Swal.fire({
                 icon: 'info',
@@ -239,7 +207,6 @@
             });
         }
 
-        // Menyimpan Template Baru secara Permanen
         document.getElementById('inputTemplate').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -265,11 +232,6 @@
         // 2. PEMBARUAN TEKS & FOTO REAL-TIME
         // ==========================================
         
-        // Tagar
-        document.getElementById('inputHashtag').addEventListener('input', function() {
-            document.getElementById('textHashtag').innerText = this.value;
-        });
-
         // Judul (Otomatis deteksi baris baru)
         document.getElementById('inputTitle').addEventListener('input', function() {
             const formattedText = this.value.replace(/\n/g, '<br>');
@@ -297,7 +259,6 @@
         // 3. RENDER CANVAS KE GAMBAR (UNDUH)
         // ==========================================
         document.getElementById('btnDownload').addEventListener('click', () => {
-            // Cek kelengkapan
             if (!localStorage.getItem('satuPenaTemplatePaten')) {
                 Swal.fire('Template Kosong', 'Harap unggah latar belakang (template) terlebih dahulu.', 'warning');
                 return;
@@ -313,9 +274,8 @@
                 didOpen: () => { Swal.showLoading(); }
             });
 
-            // Eksekusi HTML2Canvas
             html2canvas(posterRenderArea, {
-                scale: 2, // Kualitas HD untuk IG
+                scale: 2, 
                 useCORS: true,
                 backgroundColor: null 
             }).then(canvas => {
