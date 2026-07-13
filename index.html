@@ -12,6 +12,9 @@
     
     <!-- SweetAlert2 CSS & JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- EmailJS SDK (BARU: dipakai untuk benar-benar mengirim email) -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <style>
         /* =========================================
@@ -532,6 +535,17 @@
         const db = getFirestore(app);
 
         // =========================================
+        // KONFIGURASI EMAILJS (BARU)
+        // Ganti 3 nilai di bawah ini dengan milik akun EmailJS kamu
+        // Ambil dari dashboard EmailJS: emailjs.com
+        // =========================================
+        const EMAILJS_PUBLIC_KEY = "2a9O5Q-7Uk0b7RpmG";
+        const EMAILJS_SERVICE_ID = "service_r3z10ye";
+        const EMAILJS_TEMPLATE_ID = "template_jjeu22b";
+
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+        // =========================================
         // LOGIKA AUTENTIKASI LOGIN / REGISTRASI
         // =========================================
         const loginBtn = document.getElementById('openLoginBtn');
@@ -594,10 +608,19 @@
                                 timestamp: serverTimestamp()
                             });
 
+                            // BARU: Benar-benar mengirim email lewat EmailJS
+                            // Nama variabel di sini (to_email, to_name, access_code) HARUS
+                            // sama persis dengan nama variabel di template EmailJS kamu.
+                            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                                to_email: email,
+                                to_name: nama,
+                                access_code: kodeAkses
+                            });
+
                             return { email: email, nama: nama };
                         } catch (error) {
-                            console.error("Error saving data:", error);
-                            Swal.showValidationMessage(`Gagal menghubungi server: ${error.message}`);
+                            console.error("Error saving data / sending email:", error);
+                            Swal.showValidationMessage(`Gagal mengirim kode akses: ${error.text || error.message || error}`);
                             return false;
                         }
                     },
