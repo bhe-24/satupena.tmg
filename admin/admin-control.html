@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control Room - Satu Pena Temanggung</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* === VARIABEL WARNA & UTILITY === */
+        :root {
+            --primary-brown: #3E2723;
+            --secondary-brown: #5D4037;
+            --bg-light: #FAFAFA;
+            --text-dark: #212121;
+            --text-light: #FFFFFF;
+            --gray-muted: #757575;
+            --border-color: #E0E0E0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #EFEBE9; color: var(--text-dark); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+        .app-container {
+            width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh;
+            background-color: var(--bg-light); box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column; position: relative;
+        }
+
+        /* === AUTH GATE (LOADING) === */
+        .auth-gate {
+            position: fixed; inset: 0; background-color: #EFEBE9;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 999;
+        }
+        .spinner {
+            width: 36px; height: 36px; border: 4px solid #D7CCC8;
+            border-top-color: var(--primary-brown); border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === HEADER === */
+        .main-header {
+            background-color: var(--primary-brown); color: var(--text-light);
+            padding: 15px 20px; display: flex; align-items: center; gap: 15px;
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn-back {
+            background: none; border: none; color: var(--text-light);
+            font-size: 1.2rem; cursor: pointer; padding: 5px;
+        }
+        .header-title { font-size: 1.1rem; font-weight: 700; }
+
+        /* === FORM KONTEN === */
+        .form-section { padding: 20px; flex-grow: 1; }
+        .form-group { margin-bottom: 20px; background: #FFFFFF; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 700; color: var(--primary-brown); margin-bottom: 8px; }
+        
+        .form-input {
+            width: 100%; padding: 12px; border: 1.5px solid var(--border-color);
+            border-radius: 8px; font-size: 0.9rem; outline: none; transition: 0.3s;
+        }
+        .form-input:focus { border-color: var(--secondary-brown); }
+
+        .file-info { font-size: 0.75rem; color: #E65100; margin-top: 5px; font-weight: 600; }
+
+        /* Preview Gambar */
+        .img-preview-box {
+            width: 100%; height: 120px; background-color: #EFEBE9; border: 2px dashed #BCAAA4;
+            border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .img-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
+        .img-preview-box.has-image img { display: block; }
+        .img-preview-box.has-image span { display: none; }
+
+        /* === FOOTER & BUTTON === */
+        .bottom-action {
+            padding: 20px; background: #FFFFFF; border-top: 1px solid var(--border-color);
+            position: sticky; bottom: 0;
+        }
+        .btn-save {
+            width: 100%; background-color: var(--primary-brown); color: var(--text-light);
+            padding: 14px; border: none; border-radius: 12px; font-size: 1rem;
+            font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .btn-save:active { transform: scale(0.98); background-color: var(--secondary-brown); }
+    </style>
+</head>
+<body>
+
+    <!-- GERBANG AUTENTIKASI -->
+    <div class="auth-gate" id="authGate">
+        <div class="spinner"></div>
+        <p style="font-weight: 600; color: #757575;">Memeriksa akses...</p>
+    </div>
+
+    <div class="app-container" id="appContainer" style="display:none;">
+        
+        <!-- HEADER -->
+        <header class="main-header">
+            <button class="btn-back" onclick="window.location.href='index.html'">←</button>
+            <div class="header-title">Control Room</div>
+        </header>
+
+        <!-- AREA FORM -->
+        <div class="form-section">
+            <p style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 20px;">
+                Pengaturan di bawah ini akan langsung mengubah tampilan pada Halaman Utama pengunjung.
+            </p>
+
+            <!-- 1. Banner Utama -->
+            <div class="form-group">
+                <label class="form-label">Teks Judul Banner</label>
+                <input type="text" id="inputBannerTitle" class="form-input" placeholder="Cth: Selamat Datang di Satu Pena">
+                
+                <label class="form-label" style="margin-top: 15px;">Gambar Banner Utama</label>
+                <input type="file" id="inputBannerImg" class="form-input" accept="image/jpeg, image/png, image/webp">
+                <div class="file-info">*Maksimal ukuran file 800 KB (Format: JPG/PNG/WEBP).</div>
+                <div class="img-preview-box" id="previewBannerBox">
+                    <span style="font-size:0.8rem; color:#757575;">Belum ada gambar</span>
+                    <img id="previewBannerImg" src="" alt="Banner Preview">
+                </div>
+            </div>
+
+            <!-- 2. Logo Web -->
+            <div class="form-group">
+                <label class="form-label">Logo Organisasi</label>
+                <input type="file" id="inputLogoImg" class="form-input" accept="image/jpeg, image/png, image/svg+xml">
+                <div class="file-info">*Gunakan rasio 1:1 (Persegi). Maksimal 500 KB.</div>
+                <div class="img-preview-box" id="previewLogoBox" style="height: 100px; width: 100px; margin: 10px auto 0;">
+                    <span style="font-size:0.7rem; color:#757575;">Logo</span>
+                    <img id="previewLogoImg" src="" alt="Logo Preview">
+                </div>
+            </div>
+
+            <!-- 3. Tautan Instagram -->
+            <div class="form-group">
+                <label class="form-label">Tautan Instagram Resmi</label>
+                <input type="url" id="inputIgUrl" class="form-input" placeholder="https://instagram.com/satupena.tmg">
+            </div>
+
+            <!-- 4. Versi Web -->
+            <div class="form-group">
+                <label class="form-label">Versi Website saat ini</label>
+                <input type="text" id="inputVersion" class="form-input" placeholder="Cth: 1.0">
+            </div>
+
+        </div>
+
+        <div class="bottom-action">
+            <button class="btn-save" id="saveConfigBtn">Simpan Perubahan</button>
+        </div>
+
+    </div>
+
+    <!-- === FIREBASE & LOGIKA === -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpUWUIzPXIZN6rrNtsIqcL6VfOE2RLVl0",
+            authDomain: "mading-cf676.firebaseapp.com",
+            projectId: "mading-cf676",
+            storageBucket: "mading-cf676.firebasestorage.app",
+            messagingSenderId: "72175203671",
+            appId: "1:72175203671:web:7a0676a55beb64bc96ba12",
+            measurementId: "G-590P9LLK7J"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // State untuk menyimpan string Base64 gambar agar tidak hilang jika tidak diupdate
+        let currentBannerBase64 = "";
+        let currentLogoBase64 = "";
+
+        // =========================================
+        // 1. PROTEKSI SESI ADMIN
+        // =========================================
+        (function checkAdminSession() {
+            const isLoggedIn = localStorage.getItem('satuPenaLoggedIn');
+            const rawUserData = localStorage.getItem('satuPenaUserData');
+            let userData = null;
+            try { userData = rawUserData ? JSON.parse(rawUserData) : null; } catch (e) {}
+
+            const isAdmin = isLoggedIn === 'true' && userData && userData.role === 'admin';
+
+            if (!isAdmin) {
+                window.location.href = "../index.html";
+                return;
+            }
+
+            document.getElementById('authGate').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            
+            // Ambil data jika lolos
+            fetchCurrentConfig();
+        })();
+
+        // =========================================
+        // 2. FUNGSI UBAH FILE KE BASE64 (DENGAN LIMIT UKURAN)
+        // =========================================
+        function handleImageUpload(inputElement, previewBoxId, previewImgId, maxSizeKB, callbackData) {
+            inputElement.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Cek ukuran (1KB = 1024 Bytes)
+                if (file.size > maxSizeKB * 1024) {
+                    Swal.fire('Ukuran File Terlalu Besar', `Maksimal ukuran file adalah ${maxSizeKB} KB.`, 'warning');
+                    this.value = ''; // Reset input
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result;
+                    // Tampilkan di preview
+                    document.getElementById(previewBoxId).classList.add('has-image');
+                    document.getElementById(previewImgId).src = base64String;
+                    // Simpan ke state
+                    callbackData(base64String);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Terapkan fungsi ke input file
+        handleImageUpload(document.getElementById('inputBannerImg'), 'previewBannerBox', 'previewBannerImg', 800, (base64) => currentBannerBase64 = base64);
+        handleImageUpload(document.getElementById('inputLogoImg'), 'previewLogoBox', 'previewLogoImg', 500, (base64) => currentLogoBase64 = base64);
+
+
+        // =========================================
+        // 3. AMBIL DATA DARI FIREBASE (SAAT HALAMAN DIMUAT)
+        // =========================================
+        async function fetchCurrentConfig() {
+            try {
+                const docRef = doc(db, "control_room", "main_config");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    if(data.bannerTitle) document.getElementById('inputBannerTitle').value = data.bannerTitle;
+                    if(data.instagramUrl) document.getElementById('inputIgUrl').value = data.instagramUrl;
+                    if(data.version) document.getElementById('inputVersion').value = data.version;
+
+                    if(data.bannerBase64) {
+                        currentBannerBase64 = data.bannerBase64;
+                        document.getElementById('previewBannerBox').classList.add('has-image');
+                        document.getElementById('previewBannerImg').src = currentBannerBase64;
+                    }
+
+                    if(data.logoBase64) {
+                        currentLogoBase64 = data.logoBase64;
+                        document.getElementById('previewLogoBox').classList.add('has-image');
+                        document.getElementById('previewLogoImg').src = currentLogoBase64;
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+                Swal.fire('Koneksi Gagal', 'Gagal memuat data dari server.', 'error');
+            }
+        }
+
+        // =========================================
+        // 4. SIMPAN DATA KE FIREBASE
+        // =========================================
+        document.getElementById('saveConfigBtn').addEventListener('click', async () => {
+            const bannerTitle = document.getElementById('inputBannerTitle').value;
+            const igUrl = document.getElementById('inputIgUrl').value;
+            const version = document.getElementById('inputVersion').value;
+
+            Swal.fire({
+                title: 'Menyimpan Pengaturan...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const docRef = doc(db, "control_room", "main_config");
+                // Gunakan merge: true agar field lain tidak terhapus jika kita mengupdate sebagian
+                await setDoc(docRef, {
+                    bannerTitle: bannerTitle,
+                    instagramUrl: igUrl,
+                    version: version,
+                    bannerBase64: currentBannerBase64,
+                    logoBase64: currentLogoBase64,
+                    lastUpdated: new Date().toISOString()
+                }, { merge: true });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil Disimpan!',
+                    text: 'Tampilan halaman utama sudah diperbarui.',
+                    confirmButtonColor: '#3E2723'
+                });
+
+            } catch (error) {
+                console.error("Gagal menyimpan:", error);
+                Swal.fire('Gagal Menyimpan', 'Terjadi kesalahan sistem.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
