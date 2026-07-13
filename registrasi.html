@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Verifikasi Akses - Satu Pena Temanggung</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playball&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* =========================================
+           1. VARIABEL & PENGATURAN DASAR
+           ========================================= */
+        :root {
+            --primary-brown: #3E2723;
+            --secondary-brown: #5D4037;
+            --accent-gold: #D7CCC8;
+            --bg-body: #EFEBE9;
+            --bg-container: #FFFFFF;
+            --text-dark: #212121;
+            --text-light: #FFFFFF;
+            --gray-muted: #757575;
+            --shadow-md: 0 4px 12px rgba(62, 39, 35, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-dark); line-height: 1.6; display: flex; justify-content: center; min-height: 100vh; }
+
+        /* =========================================
+           2. LAYOUT MOBILE-FIRST
+           ========================================= */
+        .app-container {
+            width: 100%; 
+            max-width: 480px; 
+            background-color: var(--bg-container); 
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* =========================================
+           3. HEADER SIMPEL
+           ========================================= */
+        .simple-header {
+            background-color: var(--primary-brown); 
+            color: var(--text-light);
+            padding: 20px; 
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .cursive-title {
+            font-family: 'Playball', cursive; 
+            font-size: 1.8rem; 
+            color: var(--accent-gold); 
+            line-height: 1.2;
+        }
+
+        .sub-title {
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        /* =========================================
+           4. KONTEN VERIFIKASI
+           ========================================= */
+        .verification-content {
+            padding: 30px 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .verif-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: #F5F5F5;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px dashed var(--secondary-brown);
+        }
+
+        .verif-text {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .verif-text h2 {
+            font-size: 1.3rem;
+            color: var(--primary-brown);
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .verif-text p {
+            font-size: 0.9rem;
+            color: var(--gray-muted);
+        }
+        
+        .email-display {
+            font-weight: 700;
+            color: var(--secondary-brown);
+            background-color: #EFEBE9;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* Input Kode Akses (6 Digit) */
+        .code-input-group {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .access-code-input {
+            width: 80%;
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 8px;
+            padding: 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 16px;
+            outline: none;
+            color: var(--primary-brown);
+            transition: all 0.3s ease;
+        }
+
+        .access-code-input:focus {
+            border-color: var(--secondary-brown);
+            box-shadow: 0 0 0 4px rgba(93, 64, 55, 0.1);
+        }
+
+        /* Tombol Aksi */
+        .btn-submit {
+            width: 100%;
+            background-color: var(--primary-brown);
+            color: var(--text-light);
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 10px rgba(62, 39, 35, 0.2);
+        }
+
+        .btn-submit:active {
+            background-color: var(--secondary-brown);
+            transform: scale(0.98);
+        }
+        
+        .btn-back {
+            background: none;
+            border: none;
+            color: var(--gray-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* =========================================
+           5. CUSTOM SWEETALERT
+           ========================================= */
+        .swal-satu-pena { border-radius: 20px !important; padding: 20px !important; }
+        .swal-title-custom { color: var(--primary-brown) !important; font-weight: 800 !important; }
+        .swal-confirm-custom { background-color: var(--primary-brown) !important; border-radius: 12px !important; font-weight: 700 !important; padding: 12px 24px !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- HEADER -->
+        <header class="simple-header">
+            <div class="cursive-title">media</div>
+            <div class="sub-title">SatuPena Temanggung</div>
+        </header>
+
+        <!-- KONTEN VERIFIKASI -->
+        <div class="verification-content">
+            <div class="verif-icon">🔐</div>
+            
+            <div class="verif-text">
+                <h2>Verifikasi Keanggotaan</h2>
+                <p>Masukkan 6 digit kode akses rahasia yang telah kami kirimkan ke email Anda:</p>
+                <div class="email-display" id="userEmailDisplay">memuat...</div>
+            </div>
+
+            <div class="code-input-group">
+                <input type="text" id="accessCode" class="access-code-input" maxlength="6" placeholder="------" autocomplete="off" inputmode="numeric">
+            </div>
+
+            <button class="btn-submit" id="verifyBtn">Buat Akun & Masuk</button>
+            <button class="btn-back" onclick="window.location.href='index.html'">Batal & Kembali ke Beranda</button>
+        </div>
+
+    </div>
+
+    <!-- =========================================
+         FIREBASE & JAVASCRIPT LOGIC
+         ========================================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpUWUIzPXIZN6rrNtsIqcL6VfOE2RLVl0",
+            authDomain: "mading-cf676.firebaseapp.com",
+            projectId: "mading-cf676",
+            storageBucket: "mading-cf676.firebasestorage.app",
+            messagingSenderId: "72175203671",
+            appId: "1:72175203671:web:7a0676a55beb64bc96ba12",
+            measurementId: "G-590P9LLK7J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 1. Ambil Parameter Email dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const userEmail = urlParams.get('email');
+
+        const emailDisplay = document.getElementById('userEmailDisplay');
+
+        // Validasi: Jika tidak ada email di URL, kembalikan ke beranda
+        if (!userEmail) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Akses Ditolak',
+                text: 'Data email tidak ditemukan. Silakan mulai dari halaman utama.',
+                customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
+                buttonsStyling: false
+            }).then(() => {
+                window.location.href = "index.html";
+            });
+        } else {
+            emailDisplay.innerText = userEmail;
+        }
+
+        // Filter Input agar hanya bisa angka
+        const inputCode = document.getElementById('accessCode');
+        inputCode.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, ''); // Hanya terima angka
+        });
+
+        // 2. Logika Verifikasi Kode
+        document.getElementById('verifyBtn').addEventListener('click', async () => {
+            const enteredCode = inputCode.value;
+
+            if (enteredCode.length !== 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Kode Tidak Lengkap',
+                    text: 'Harap masukkan 6 digit angka dengan benar.',
+                    customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
+                    buttonsStyling: false
+                });
+                return;
+            }
+
+            // Tampilkan loading SweetAlert
+            Swal.fire({
+                title: 'Memverifikasi...',
+                text: 'Mencocokkan data Anda di sistem.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                // Referensi dokumen pendaftaran sementara di Firestore
+                const pendingRef = doc(db, "pending_registrations", userEmail.toLowerCase());
+                const pendingSnap = await getDoc(pendingRef);
+
+                if (pendingSnap.exists()) {
+                    const data = pendingSnap.data();
+
+                    // Cocokkan kode yang diinput dengan yang ada di database
+                    if (data.kodeAkses === enteredCode) {
+                        
+                        // KODE BENAR! -> Buat akun permanen di koleksi 'users'
+                        const userRef = doc(db, "users", userEmail.toLowerCase());
+                        await setDoc(userRef, {
+                            namaLengkap: data.namaLengkap,
+                            emailUser: data.emailUser,
+                            role: "anggota", // Default role
+                            terdaftarPada: serverTimestamp()
+                        });
+
+                        // Hapus data pendaftaran sementara agar kode OTP tidak bisa dipakai lagi
+                        await deleteDoc(pendingRef);
+
+                        // Simpan status sesi login secara lokal di browser
+                        localStorage.setItem('satuPenaLoggedIn', 'true');
+                        localStorage.setItem('satuPenaUserData', JSON.stringify({
+                            nama: data.namaLengkap,
+                            email: data.emailUser
+                        }));
+
+                        // Tutup loading & tampilkan sukses
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pendaftaran Berhasil!',
+                            text: 'Selamat datang di ruang media Satu Pena Temanggung.',
+                            customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
+                            buttonsStyling: false,
+                            confirmButtonText: 'Masuk Dasbor'
+                        }).then(() => {
+                            // Arahkan ke halaman user
+                            window.location.href = "user.html";
+                        });
+
+                    } else {
+                        // KODE SALAH
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Kode Salah',
+                            text: 'Kode akses yang Anda masukkan tidak cocok. Silakan periksa kembali email Anda.',
+                            customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
+                            buttonsStyling: false
+                        });
+                        inputCode.value = ''; // Kosongkan input
+                        inputCode.focus();
+                    }
+                } else {
+                    // Dokumen tidak ditemukan di pending_registrations
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Data Kadaluarsa',
+                        text: 'Sesi permintaan kode akses Anda tidak ditemukan atau sudah kadaluarsa. Silakan ulangi proses dari awal.',
+                        customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.href = "index.html";
+                    });
+                }
+            } catch (error) {
+                console.error("Kesalahan Verifikasi:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Sistem',
+                    text: 'Terjadi masalah pada server. Periksa koneksi internet Anda atau coba lagi nanti.',
+                    customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
+                    buttonsStyling: false
+                });
+            }
+        });
+    </script>
+</body>
+</html>
