@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ruang Penulis - Satu Pena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root { --primary: #3E2723; --secondary: #5D4037; --bg: #FAFAFA; --border: #E0E0E0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #EFEBE9; color: #212121; line-height: 1.5; }
+        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; }
+        
+        .header { background: var(--primary); color: #FFF; padding: 20px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+        .profile-name { font-size: 1.2rem; font-weight: 800; margin-top: 10px; }
+        .profile-email { font-size: 0.85rem; color: #D7CCC8; }
+        
+        .content { padding: 25px 20px; flex-grow: 1; }
+        .section-title { font-size: 1.1rem; color: var(--primary); font-weight: 800; border-bottom: 2px solid #EFEBE9; padding-bottom: 8px; margin-bottom: 15px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
+        .form-input:focus { border-color: var(--primary); }
+        textarea.form-input { resize: vertical; min-height: 150px; }
+        
+        .btn-submit { width: 100%; background: var(--primary); color: #FFF; padding: 14px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .btn-logout { width: 100%; background: transparent; color: #D32F2F; padding: 14px; border: 1.5px solid #D32F2F; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <div style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">Ruang Anggota</div>
+            <div class="profile-name" id="userName">Memuat Profil...</div>
+            <div class="profile-email" id="userEmail"></div>
+        </header>
+
+        <main class="content">
+            <div class="section-title">Kirim Karya Baru</div>
+            
+            <div class="form-group">
+                <label class="form-label">Judul Karya</label>
+                <input type="text" id="karyaTitle" class="form-input" placeholder="Tuliskan judul yang indah...">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kategori</label>
+                <select id="karyaCategory" class="form-input">
+                    <option value="Cerpen">Cerita Pendek (Cerpen)</option>
+                    <option value="Puisi">Puisi</option>
+                    <option value="Artikel">Artikel / Esai</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Isi Karya</label>
+                <textarea id="karyaContent" class="form-input" placeholder="Rangkai tulisan Anda di sini..."></textarea>
+            </div>
+
+            <button class="btn-submit" id="submitKaryaBtn">Kirimkan Karya</button>
+            <button class="btn-logout" id="logoutBtn">Keluar Akun</button>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpUWUIzPXIZN6rrNtsIqcL6VfOE2RLVl0",
+            authDomain: "mading-cf676.firebaseapp.com",
+            projectId: "mading-cf676",
+            storageBucket: "mading-cf676.firebasestorage.app",
+            messagingSenderId: "72175203671",
+            appId: "1:72175203671:web:7a0676a55beb64bc96ba12"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Muat Data Sesi
+        const rawUserData = localStorage.getItem('satuPenaUserData');
+        const isLoggedIn = localStorage.getItem('satuPenaLoggedIn');
+        let userData = {};
+
+        if (!isLoggedIn || !rawUserData) {
+            window.location.href = "index.html";
+        } else {
+            userData = JSON.parse(rawUserData);
+            document.getElementById('userName').innerText = userData.nama || "Penulis";
+            document.getElementById('userEmail').innerText = userData.email || "";
+        }
+
+        // Kirim Karya
+        document.getElementById('submitKaryaBtn').addEventListener('click', async () => {
+            const title = document.getElementById('karyaTitle').value.trim();
+            const category = document.getElementById('karyaCategory').value;
+            const content = document.getElementById('karyaContent').value.trim();
+
+            if (!title || !content) {
+                Swal.fire('Data Belum Lengkap', 'Judul dan isi karya tidak boleh dibiarkan kosong.', 'warning');
+                return;
+            }
+
+            Swal.fire({ title: 'Menyimpan Karya...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+            try {
+                await addDoc(collection(db, "submissions"), {
+                    penulis: userData.nama,
+                    emailPenulis: userData.email,
+                    judul: title,
+                    kategori: category,
+                    isi: content,
+                    status: "pending", // Menunggu moderasi admin
+                    dikirimPada: serverTimestamp()
+                });
+
+                Swal.fire('Berhasil Dikirim!', 'Karya Anda telah diterima dan akan ditinjau oleh tim redaksi.', 'success');
+                
+                // Bersihkan formulir
+                document.getElementById('karyaTitle').value = '';
+                document.getElementById('karyaContent').value = '';
+
+            } catch (error) {
+                Swal.fire('Terjadi Kesalahan', 'Gagal mengirim karya. Periksa koneksi Anda.', 'error');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            Swal.fire({
+                title: 'Keluar dari Akun?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Keluar',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#D32F2F'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('satuPenaLoggedIn');
+                    localStorage.removeItem('satuPenaUserData');
+                    window.location.href = "index.html";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
