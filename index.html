@@ -539,9 +539,9 @@
         // Ganti 3 nilai di bawah ini dengan milik akun EmailJS kamu
         // Ambil dari dashboard EmailJS: emailjs.com
         // =========================================
-        const EMAILJS_PUBLIC_KEY = "2a9O5Q-7Uk0b7RpmG";
-        const EMAILJS_SERVICE_ID = "service_r3z10ye";
-        const EMAILJS_TEMPLATE_ID = "template_jjeu22b";
+        const EMAILJS_PUBLIC_KEY = "GANTI_DENGAN_PUBLIC_KEY";
+        const EMAILJS_SERVICE_ID = "GANTI_DENGAN_SERVICE_ID";
+        const EMAILJS_TEMPLATE_ID = "GANTI_DENGAN_TEMPLATE_ID";
 
         emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
@@ -613,8 +613,8 @@
                             // sama persis dengan nama variabel di template EmailJS kamu.
                             await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
                                 to_email: email,
-                                to_name: nama,
-                                access_code: kodeAkses
+                                name: nama,
+                                kodeAkses: kodeAkses
                             });
 
                             return { email: email, nama: nama };
