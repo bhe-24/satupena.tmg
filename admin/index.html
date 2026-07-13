@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playball&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- SweetAlert2 (dipakai supaya konfirmasi & pesan konsisten dengan halaman lain) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         /* === VARIABEL WARNA & UTILITY === */
@@ -46,6 +49,38 @@
             display: flex;
             flex-direction: column;
             position: relative;
+        }
+
+        /* === LOADING SCREEN (saat cek sesi admin) === */
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            background-color: #EFEBE9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 999;
+        }
+
+        .auth-gate .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #D7CCC8;
+            border-top-color: var(--primary-brown);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-gate p {
+            font-size: 0.9rem;
+            color: var(--gray-muted);
+            font-weight: 600;
         }
 
         /* === HEADER STYLING === */
@@ -128,6 +163,19 @@
             margin-top: 4px;
         }
 
+        .admin-badge {
+            display: inline-block;
+            margin-top: 8px;
+            background-color: #FFF3E0;
+            color: #E65100;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* === ADMIN MENU GRID === */
         .menu-grid {
             padding: 15px 20px;
@@ -145,12 +193,14 @@
             text-decoration: none;
             color: var(--text-dark);
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
             cursor: pointer;
+            font-family: inherit;
+            width: 100%;
         }
 
         .menu-card:active {
@@ -208,7 +258,13 @@
 </head>
 <body>
 
-    <div class="app-container">
+    <!-- GERBANG AUTENTIKASI: ditampilkan selagi sistem memverifikasi sesi admin -->
+    <div class="auth-gate" id="authGate">
+        <div class="spinner"></div>
+        <p>Memeriksa sesi admin...</p>
+    </div>
+
+    <div class="app-container" id="appContainer" style="display:none;">
         
         <header class="main-header">
             <div class="header-brand">
@@ -223,43 +279,44 @@
         </header>
 
         <section class="greeting-section">
-            <h2>Dashboard Utama</h2>
+            <h2 id="greetingText">Dashboard Utama</h2>
             <p>Kelola konten, publikasi, dan pengaturan tampilan website Satu Pena Temanggung di sini.</p>
+            <span class="admin-badge" id="adminEmailBadge"></span>
         </section>
 
         <div class="menu-grid">
             
-            <div class="menu-card full-width" onclick="navigate('admin-control.html')">
+            <button type="button" class="menu-card full-width" data-target="admin-control.html">
                 <div class="menu-icon">⚙️</div>
                 <div>
                     <div class="menu-title">Control Room (Pengaturan Umum)</div>
                     <div class="menu-desc">Ubah Logo, Banner Utama, Tautan Instagram, Info Kontak, dan Versi Web.</div>
                 </div>
-            </div>
+            </button>
 
-            <div class="menu-card" onclick="navigate('admin-artikel.html')">
+            <button type="button" class="menu-card" data-target="admin-artikel.html">
                 <div class="menu-icon">📝</div>
                 <div class="menu-title">Manajemen Artikel</div>
                 <div class="menu-desc">Tulis dan terbitkan berita terbaru.</div>
-            </div>
+            </button>
 
-            <div class="menu-card" onclick="navigate('admin-karya.html')">
+            <button type="button" class="menu-card" data-target="admin-karya.html">
                 <div class="menu-icon">📚</div>
                 <div class="menu-title">Kurasi Karya</div>
                 <div class="menu-desc">Tinjau karya dari anggota (cerpen/puisi).</div>
-            </div>
+            </button>
 
-            <div class="menu-card" onclick="navigate('admin-instagram.html')">
+            <button type="button" class="menu-card" data-target="admin-instagram.html">
                 <div class="menu-icon">🖼️</div>
                 <div class="menu-title">Poster Instagram</div>
                 <div class="menu-desc">Buat desain poster & caption otomatis.</div>
-            </div>
+            </button>
 
-            <div class="menu-card" onclick="navigate('admin-anak.html')">
+            <button type="button" class="menu-card" data-target="admin-anak.html">
                 <div class="menu-icon">🎨</div>
                 <div class="menu-title">Pojok Anak</div>
                 <div class="menu-desc">Kelola konten & poster khusus anak-anak.</div>
-            </div>
+            </button>
 
         </div>
 
@@ -269,48 +326,82 @@
 
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    <script>
+        // =========================================
+        // PROTEKSI AKSES ADMIN
+        // Sistem otentikasi di aplikasi ini berbasis Firestore + localStorage
+        // (bukan Firebase Authentication), jadi pengecekan sesi dilakukan di sini,
+        // sesuai pola yang sama dipakai index.html & verifikasi.html.
+        // =========================================
+        (function checkAdminSession() {
+            const isLoggedIn = localStorage.getItem('satuPenaLoggedIn');
+            const rawUserData = localStorage.getItem('satuPenaUserData');
 
-        // Konfigurasi Firebase Web SDK
-        const firebaseConfig = {
-            apiKey: "AIzaSyDpUWUIzPXIZN6rrNtsIqcL6VfOE2RLVl0",
-            authDomain: "mading-cf676.firebaseapp.com",
-            projectId: "mading-cf676",
-            storageBucket: "mading-cf676.firebasestorage.app",
-            messagingSenderId: "72175203671",
-            appId: "1:72175203671:web:7a0676a55beb64bc96ba12",
-            measurementId: "G-590P9LLK7J"
-        };
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Fungsi Navigasi antar halaman Admin
-        window.navigate = function(pageUrl) {
-            // Animasi visual klik bisa ditambahkan di sini
-            console.log("Mengarahkan ke: " + pageUrl);
-            
-            // Karena ini masih tahap kerangka, kita beri alert informatif. 
-            // Jika file html-nya sudah ada satu folder, aktifkan kode window.location.href di bawah ini:
-            
-            // window.location.href = pageUrl;
-            alert("Sistem mengarahkan ke halaman: " + pageUrl);
-        };
-
-        // Fungsi Logout
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            const confirmLogout = confirm("Apakah Anda yakin ingin keluar dari sesi Admin?");
-            if(confirmLogout) {
-                // signOut(auth).then(() => {
-                    // Berhasil keluar, arahkan kembali ke index utama
-                    window.location.href = "index.html"; 
-                // }).catch((error) => {
-                //     alert("Terjadi kesalahan saat logout: " + error.message);
-                // });
+            let userData = null;
+            try {
+                userData = rawUserData ? JSON.parse(rawUserData) : null;
+            } catch (e) {
+                userData = null;
             }
+
+            const isAdmin = isLoggedIn === 'true' && userData && userData.role === 'admin';
+
+            if (!isAdmin) {
+                // Bukan admin (atau belum login sama sekali) -> tendang ke beranda
+                window.location.href = "../index.html";
+                return;
+            }
+
+            // Lolos verifikasi -> tampilkan dashboard, sembunyikan gerbang loading
+            document.getElementById('authGate').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+
+            const greetingText = document.getElementById('greetingText');
+            const adminEmailBadge = document.getElementById('adminEmailBadge');
+
+            if (userData.nama) {
+                greetingText.innerText = `Halo, ${userData.nama}`;
+            }
+            if (userData.email) {
+                adminEmailBadge.innerText = userData.email;
+            }
+        })();
+
+        // =========================================
+        // NAVIGASI ANTAR HALAMAN ADMIN (BARU: benar-benar berpindah halaman)
+        // =========================================
+        document.querySelectorAll('.menu-card[data-target]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-target');
+                window.location.href = target;
+            });
+        });
+
+        // =========================================
+        // LOGOUT (BARU: menghapus sesi localStorage, bukan Firebase Auth
+        // yang memang tidak dipakai di sistem ini)
+        // =========================================
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            Swal.fire({
+                title: 'Keluar dari Sesi Admin?',
+                text: 'Anda perlu memverifikasi ulang untuk masuk kembali.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Keluar',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'swal-confirm-custom',
+                },
+                buttonsStyling: true,
+                confirmButtonColor: '#D32F2F',
+                cancelButtonColor: '#757575'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('satuPenaLoggedIn');
+                    localStorage.removeItem('satuPenaUserData');
+                    window.location.href = "../index.html";
+                }
+            });
         });
     </script>
 </body>
