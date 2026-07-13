@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard - Satu Pena Temanggung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playball&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === VARIABEL WARNA & UTILITY === */
+        :root {
+            --primary-brown: #3E2723;
+            --secondary-brown: #5D4037;
+            --accent-beige: #F5F5DC;
+            --bg-light: #FAFAFA;
+            --text-dark: #212121;
+            --text-light: #FFFFFF;
+            --gray-muted: #757575;
+            --danger-red: #D32F2F;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: #EFEBE9;
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* === MOBILE FIRST CONTAINER === */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--bg-light);
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* === HEADER STYLING === */
+        .main-header {
+            background-color: var(--primary-brown);
+            color: var(--text-light);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text .cursive-text {
+            font-family: 'Playball', cursive;
+            font-size: 1.3rem;
+            color: #D7CCC8;
+            line-height: 1;
+        }
+
+        .brand-text .caps-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            border: 1.5px solid #FFCDD2;
+            color: #FFCDD2;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:active {
+            background-color: #FFCDD2;
+            color: var(--danger-red);
+        }
+
+        /* === GREETING SECTION === */
+        .greeting-section {
+            padding: 20px 20px 10px 20px;
+        }
+        
+        .greeting-section h2 {
+            font-size: 1.25rem;
+            color: var(--primary-brown);
+            font-weight: 700;
+        }
+        
+        .greeting-section p {
+            font-size: 0.85rem;
+            color: var(--gray-muted);
+            margin-top: 4px;
+        }
+
+        /* === ADMIN MENU GRID === */
+        .menu-grid {
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .menu-card {
+            background-color: var(--text-light);
+            border: 1px solid #E0E0E0;
+            border-radius: 14px;
+            padding: 20px 15px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .menu-card:active {
+            transform: scale(0.97);
+            border-color: var(--secondary-brown);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .menu-icon {
+            font-size: 2rem;
+            background-color: #EFEBE9;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .menu-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--primary-brown);
+        }
+
+        .menu-desc {
+            font-size: 0.7rem;
+            color: var(--gray-muted);
+            line-height: 1.3;
+        }
+
+        /* Full width card for specific menus */
+        .menu-card.full-width {
+            grid-column: span 2;
+            flex-direction: row;
+            text-align: left;
+            padding: 15px 20px;
+        }
+        
+        .menu-card.full-width .menu-icon {
+            flex-shrink: 0;
+        }
+
+        /* === FOOTER AREA === */
+        .main-footer {
+            background-color: #212121;
+            color: #B0BEC5;
+            padding: 20px;
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="main-header">
+            <div class="header-brand">
+                <div class="brand-text">
+                    <span class="cursive-text">admin</span>
+                    <span class="caps-text">SatuPena Temanggung</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="logout-btn" id="logoutBtn">Keluar</button>
+            </div>
+        </header>
+
+        <section class="greeting-section">
+            <h2>Dashboard Utama</h2>
+            <p>Kelola konten, publikasi, dan pengaturan tampilan website Satu Pena Temanggung di sini.</p>
+        </section>
+
+        <div class="menu-grid">
+            
+            <div class="menu-card full-width" onclick="navigate('admin-control.html')">
+                <div class="menu-icon">⚙️</div>
+                <div>
+                    <div class="menu-title">Control Room (Pengaturan Umum)</div>
+                    <div class="menu-desc">Ubah Logo, Banner Utama, Tautan Instagram, Info Kontak, dan Versi Web.</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="navigate('admin-artikel.html')">
+                <div class="menu-icon">📝</div>
+                <div class="menu-title">Manajemen Artikel</div>
+                <div class="menu-desc">Tulis dan terbitkan berita terbaru.</div>
+            </div>
+
+            <div class="menu-card" onclick="navigate('admin-karya.html')">
+                <div class="menu-icon">📚</div>
+                <div class="menu-title">Kurasi Karya</div>
+                <div class="menu-desc">Tinjau karya dari anggota (cerpen/puisi).</div>
+            </div>
+
+            <div class="menu-card" onclick="navigate('admin-instagram.html')">
+                <div class="menu-icon">🖼️</div>
+                <div class="menu-title">Poster Instagram</div>
+                <div class="menu-desc">Buat desain poster & caption otomatis.</div>
+            </div>
+
+            <div class="menu-card" onclick="navigate('admin-anak.html')">
+                <div class="menu-icon">🎨</div>
+                <div class="menu-title">Pojok Anak</div>
+                <div class="menu-desc">Kelola konten & poster khusus anak-anak.</div>
+            </div>
+
+        </div>
+
+        <footer class="main-footer">
+            &copy; 2026 CMS Satu Pena Temanggung.<br>Sistem Manajemen Konten Terintegrasi.
+        </footer>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Konfigurasi Firebase Web SDK
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpUWUIzPXIZN6rrNtsIqcL6VfOE2RLVl0",
+            authDomain: "mading-cf676.firebaseapp.com",
+            projectId: "mading-cf676",
+            storageBucket: "mading-cf676.firebasestorage.app",
+            messagingSenderId: "72175203671",
+            appId: "1:72175203671:web:7a0676a55beb64bc96ba12",
+            measurementId: "G-590P9LLK7J"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Fungsi Navigasi antar halaman Admin
+        window.navigate = function(pageUrl) {
+            // Animasi visual klik bisa ditambahkan di sini
+            console.log("Mengarahkan ke: " + pageUrl);
+            
+            // Karena ini masih tahap kerangka, kita beri alert informatif. 
+            // Jika file html-nya sudah ada satu folder, aktifkan kode window.location.href di bawah ini:
+            
+            // window.location.href = pageUrl;
+            alert("Sistem mengarahkan ke halaman: " + pageUrl);
+        };
+
+        // Fungsi Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            const confirmLogout = confirm("Apakah Anda yakin ingin keluar dari sesi Admin?");
+            if(confirmLogout) {
+                // signOut(auth).then(() => {
+                    // Berhasil keluar, arahkan kembali ke index utama
+                    window.location.href = "index.html"; 
+                // }).catch((error) => {
+                //     alert("Terjadi kesalahan saat logout: " + error.message);
+                // });
+            }
+        });
+    </script>
+</body>
+</html>
