@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generator Poster IG - Satu Pena Temanggung</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Oswald:wght@600&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- HTML2Canvas Library untuk render ke Gambar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        /* === VARIABEL WARNA & UTILITY === */
+        :root {
+            --primary-brown: #3E2723;
+            --secondary-brown: #5D4037;
+            --accent-gold: #C6A15B;
+            --bg-light: #FAFAFA;
+            --border-color: #E0E0E0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #EFEBE9; color: #212121; -webkit-font-smoothing: antialiased; }
+
+        .app-container {
+            width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh;
+            background-color: var(--bg-light); box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column;
+        }
+
+        /* === HEADER === */
+        .main-header {
+            background-color: var(--primary-brown); color: #FFF;
+            padding: 15px 20px; display: flex; align-items: center; gap: 15px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .btn-back { background: none; border: none; color: #FFF; font-size: 1.2rem; cursor: pointer; padding: 5px; }
+        .header-title { font-size: 1.1rem; font-weight: 700; }
+
+        /* === AREA FORM INPUT === */
+        .form-section { padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary-brown); margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 10px; border: 1.5px solid var(--border-color);
+            border-radius: 8px; font-size: 0.9rem; outline: none; transition: 0.3s;
+        }
+        .form-input:focus { border-color: var(--secondary-brown); }
+
+        /* === POSTER BUILDER (CANVAS PREVIEW) === */
+        .preview-section {
+            padding: 0 20px 20px 20px;
+        }
+        
+        .poster-wrapper {
+            width: 100%;
+            /* Aspek Rasio Poster Instagram 4:5 (Portrait) */
+            aspect-ratio: 4 / 5;
+            position: relative;
+            background-color: #D7CCC8; /* Fallback color */
+            
+            /* GANTI URL INI dengan link gambar template mentahan milikmu yang KOSONG tanpa teks dan foto */
+            background-image: url('https://placehold.co/1080x1350/C8B5A6/FFF?text=MASUKKAN+TEMPLATE+KOSONG+DISINI'); 
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            overflow: hidden; /* Mencegah gambar tumpah ke luar frame */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* ELEMEN 1: Foto Utama (Kanan Atas) */
+        .layer-main-photo {
+            position: absolute;
+            top: 15%; /* Sesuaikan persentase ini agar pas di template */
+            right: 8%;
+            width: 70%;
+            height: 38%;
+            background-color: #E0E0E0;
+            object-fit: cover;
+            border-radius: 15px; /* Menyesuaikan lekukan frame template */
+            z-index: 1;
+        }
+
+        /* ELEMEN 2: Tagar (Kiri Atas Foto Utama) */
+        .layer-hashtag {
+            position: absolute;
+            top: 17%;
+            left: 15%;
+            background: linear-gradient(90deg, #6D4C41 0%, #4E342E 100%);
+            color: #FFFFFF;
+            padding: 6px 18px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transform: rotate(-3deg); /* Efek miring sedikit */
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.3);
+            z-index: 3;
+        }
+
+        /* ELEMEN 3: Foto Kedua (Kiri Tengah, Miring) */
+        .layer-side-photo {
+            position: absolute;
+            top: 38%;
+            left: -8%;
+            width: 50%;
+            height: 30%;
+            background-color: #BCAAA4;
+            object-fit: cover;
+            border: 8px solid #F5F5F5; /* Border putih menyerupai frame polaroid */
+            border-radius: 12px;
+            transform: rotate(-25deg);
+            box-shadow: 4px 6px 15px rgba(0,0,0,0.25);
+            z-index: 2;
+        }
+
+        /* ELEMEN 4: Judul (Bawah) */
+        .layer-title {
+            position: absolute;
+            top: 65%;
+            left: 20%;
+            width: 65%;
+            text-align: center;
+            color: #5D4037;
+            font-weight: 800;
+            font-size: 1.15rem;
+            line-height: 1.3;
+            z-index: 4;
+            /* Font untuk efek bayangan/tebal pada gambar referensi */
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
+
+        /* === TOMBOL AKSI === */
+        .action-group {
+            padding: 20px;
+            background: #FFF;
+            border-top: 1px solid var(--border-color);
+            position: sticky; bottom: 0;
+            z-index: 100;
+        }
+        .btn-generate {
+            width: 100%; background-color: var(--primary-brown); color: #FFF;
+            padding: 15px; border: none; border-radius: 12px; font-size: 1rem;
+            font-weight: 700; cursor: pointer; transition: 0.2s; display: flex;
+            justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-generate:active { transform: scale(0.98); background-color: var(--secondary-brown); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="main-header">
+            <button class="btn-back" onclick="window.location.href='admin-index.html'">←</button>
+            <div class="header-title">Generator Poster Instagram</div>
+        </header>
+
+        <!-- FORM KENDALI -->
+        <div class="form-section">
+            <div class="form-group">
+                <label class="form-label">Tagar (#)</label>
+                <input type="text" id="inputHashtag" class="form-input" value="#LiterasiIndonesia" placeholder="Contoh: #LiterasiIndonesia">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Teks Judul</label>
+                <textarea id="inputTitle" class="form-input" rows="2">Membaca sebagai Kunci Membuka Jendela Dunia</textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Unggah Foto Utama (Kanan Besar)</label>
+                <input type="file" id="inputFileMain" class="form-input" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Unggah Foto Pendukung (Kiri Miring)</label>
+                <input type="file" id="inputFileSide" class="form-input" accept="image/*">
+            </div>
+        </div>
+
+        <!-- AREA PRATINJAU (RENDER CANVAS) -->
+        <div class="preview-section">
+            <label class="form-label">Pratinjau Poster</label>
+            
+            <!-- Target Render HTML2Canvas -->
+            <div class="poster-wrapper" id="posterRenderArea">
+                <!-- Elemen dinamis yang ditimpa di atas template latar -->
+                <img id="imgMain" class="layer-main-photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWExIDEgMCAwIDAtMSAxdjE0YTEgMSAwIDAgMCAxIDFoMTRhMSAxIDAgMCAwIDEtMVYxaC0ydjZ6bS03LTYgbDMtM2w0IDR2OUgxMnoiLz48L3N2Zz4=" alt="Main">
+                
+                <div id="textHashtag" class="layer-hashtag">#LiterasiIndonesia</div>
+                
+                <img id="imgSide" class="layer-side-photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWExIDEgMCAwIDAtMSAxdjE0YTEgMSAwIDAgMCAxIDFoMTRhMSAxIDAgMCAwIDEtMVYxaC0ydjZ6bS03LTYgbDMtM2w0IDR2OUgxMnoiLz48L3N2Zz4=" alt="Side">
+                
+                <div id="textTitle" class="layer-title">Membaca sebagai Kunci<br>Membuka Jendela Dunia</div>
+            </div>
+        </div>
+
+        <div class="action-group">
+            <button class="btn-generate" id="btnDownload">
+                <span>⬇️ Unduh Jadi Gambar (JPG)</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. LOGIKA UPDATE PRATINJAU SECARA REAL-TIME
+        // ==========================================
+        
+        // Update Tagar
+        document.getElementById('inputHashtag').addEventListener('input', function() {
+            document.getElementById('textHashtag').innerText = this.value;
+        });
+
+        // Update Judul (Menangani line break / baris baru)
+        document.getElementById('inputTitle').addEventListener('input', function() {
+            const formattedText = this.value.replace(/\n/g, '<br>');
+            document.getElementById('textTitle').innerHTML = formattedText;
+        });
+
+        // Update Foto Utama
+        document.getElementById('inputFileMain').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('imgMain').src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Update Foto Pendukung
+        document.getElementById('inputFileSide').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('imgSide').src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ==========================================
+        // 2. LOGIKA CONVERT HTML KE GAMBAR & UNDUH
+        // ==========================================
+        document.getElementById('btnDownload').addEventListener('click', () => {
+            const posterArea = document.getElementById('posterRenderArea');
+            
+            // Validasi jika gambar belum diganti
+            if(document.getElementById('inputFileMain').files.length === 0 || document.getElementById('inputFileSide').files.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Foto Belum Lengkap',
+                    text: 'Pastikan Anda telah mengunggah kedua foto sebelum mengunduh poster.',
+                    confirmButtonColor: '#3E2723'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Sedang Memproses Poster...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            // Gunakan html2canvas untuk memotret DOM
+            html2canvas(posterArea, {
+                scale: 2, // Kualitas tinggi untuk IG (Retina display)
+                useCORS: true, // Izinkan memuat gambar dari URL external
+                backgroundColor: null 
+            }).then(canvas => {
+                // Konversi canvas menjadi Data URL gambar JPG
+                const imgData = canvas.toDataURL("image/jpeg", 0.9);
+                
+                // Buat elemen <a> maya untuk memicu unduhan otomatis
+                const link = document.createElement('a');
+                link.download = `Poster_SatuPena_${new Date().getTime()}.jpg`;
+                link.href = imgData;
+                link.click();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil Diunduh!',
+                    text: 'Poster siap diunggah ke Instagram.',
+                    confirmButtonColor: '#3E2723'
+                });
+            }).catch(error => {
+                console.error("Gagal merender poster:", error);
+                Swal.fire('Gagal', 'Terjadi kesalahan saat memproses gambar.', 'error');
+            });
+        });
+    </script>
+</body>
+</html>
