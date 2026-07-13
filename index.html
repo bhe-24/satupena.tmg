@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Media Satu Pena Temanggung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playball&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === VARIABEL WARNA & UTILITY === */
+        :root {
+            --primary-brown: #3E2723;
+            --secondary-brown: #5D4037;
+            --accent-beige: #F5F5DC;
+            --bg-light: #FAFAFA;
+            --text-dark: #212121;
+            --text-light: #FFFFFF;
+            --gray-muted: #757575;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: #EFEBE9;
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* === MOBILE FIRST CONTAINER === */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--text-light);
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* === HEADER STYLING === */
+        .main-header {
+            background-color: var(--primary-brown);
+            color: var(--text-light);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-placeholder {
+            width: 42px;
+            height: 42px;
+            background-color: var(--text-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text .cursive-text {
+            font-family: 'Playball', cursive;
+            font-size: 1.3rem;
+            color: #D7CCC8;
+            line-height: 1;
+        }
+
+        .brand-text .caps-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .login-btn {
+            background-color: transparent;
+            border: 1.5px solid var(--text-light);
+            color: var(--text-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:active {
+            background-color: var(--text-light);
+            color: var(--primary-brown);
+        }
+
+        .hamburger-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 22px;
+            height: 2.5px;
+            background-color: var(--text-light);
+            border-radius: 2px;
+        }
+
+        /* === BANNER SECTIONS === */
+        .banner-container {
+            padding: 15px;
+        }
+
+        .info-banner {
+            width: 100%;
+            height: 150px;
+            background-color: var(--secondary-brown);
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .info-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px 12px;
+            color: var(--text-light);
+        }
+
+        .banner-overlay h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* === APP CONTENT SECTIONS === */
+        .section-wrapper {
+            padding: 15px;
+            border-bottom: 6px solid #F5F5F5;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-brown);
+            position: relative;
+        }
+
+        /* CARD LISTS */
+        .item-card {
+            background: var(--text-light);
+            border: 1px solid #ECEFF1;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .item-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background-color: #F5F5F5;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .item-details h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: var(--gray-muted);
+        }
+
+        /* INSTAGRAM EMBED SECTION */
+        .instagram-feed {
+            background: #FAFAFA;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px dashed var(--secondary-brown);
+        }
+
+        .ig-btn-link {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #E1306C;
+            color: var(--text-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* KHUSUS ANAK SECTION */
+        .children-box {
+            background-color: #FFFDE7;
+            border: 2px solid #FFF59D;
+            border-radius: 14px;
+            padding: 15px;
+        }
+
+        /* === FOOTER AREA === */
+        .main-footer {
+            background-color: #212121;
+            color: #B0BEC5;
+            padding: 30px 20px 20px 20px;
+            margin-top: auto;
+            font-size: 0.85rem;
+        }
+
+        .footer-contacts h4 {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .contact-row {
+            margin-bottom: 6px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #37474F;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: #90A4AE;
+            text-decoration: none;
+        }
+
+        .footer-version-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #78909C;
+        }
+
+        /* === MODAL / DIALOGS === */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: var(--text-light);
+            width: 100%;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-box h3 {
+            margin-bottom: 15px;
+            color: var(--primary-brown);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #CFD8DC;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-confirm { background: var(--primary-brown); color: var(--text-light); }
+        .btn-cancel { background: #ECEFF1; color: var(--text-dark); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="main-header">
+            <div class="header-brand">
+                <div class="logo-placeholder">
+                    <img id="appLogo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzNFMjcyMyI+PHBhdGggZD0iTTEyIDJhMTAgMTAgMCAwIDAtMTAgMTBjMCA1LjUyNCA0LjQ3NiAxMCAxMCAxMHMxMC00LjQ3NiAxMC0xMEExMCAxMCAwIDAgMCAxMiAyem0xIDUuNWgydjNoLTN2LTNoMXptLTQgN2gtMnYtM2gydjN6bTcgMGgtMnYtNWgydjV6Ii8+PC9zdmc+" alt="Logo">
+                </div>
+                <div class="brand-text">
+                    <span class="cursive-text">media</span>
+                    <span class="caps-text">SatuPena Temanggung</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="login-btn" id="openLoginBtn">Login</button>
+                <div class="hamburger-menu" onclick="alert('Menu navigasi tambahan segera hadir!')">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="banner-container">
+            <div class="info-banner" id="infoBanner">
+                <div class="banner-overlay">
+                    <h2 id="bannerTitle">Memuat informasi terbaru...</h2>
+                </div>
+            </div>
+        </div>
+
+        <section class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">Artikel Berita</h2>
+            </div>
+            <div id="articleContainer">
+                <p style="font-size:0.85rem; color:var(--gray-muted);">Sedang memuat artikel...</p>
+            </div>
+        </section>
+
+        <section class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">Instagram Kami</h2>
+            </div>
+            <div class="instagram-feed">
+                <p id="igStatusText">Kunjungi feed Instagram resmi Satu Pena Temanggung melalui tautan di bawah ini.</p>
+                <a href="https://instagram.com/satupena.tmg" target="_blank" class="ig-btn-link" id="igLink">Buka Instagram</a>
+            </div>
+        </section>
+
+        <section class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title" style="color: #F57F17;">Pojok Anak</h2>
+            </div>
+            <div class="children-box" id="childrenContainer">
+                <p style="font-size:0.85rem; color:#F57F17;">Sedang memuat ruang kreasi anak-anak...</p>
+            </div>
+        </section>
+
+        <footer class="main-footer">
+            <div class="footer-contacts">
+                <h4>Informasi Kontak</h4>
+                <div class="contact-row">
+                    <span><strong>Humas:</strong> 085939188592</span>
+                    <span><strong>Email:</strong> satupenatmg@gmail.com</span>
+                    <span><strong>Media Sosial:</strong> @satupena.tmg</span>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="#" onclick="alert('Halaman Kebijakan Privasi')">Kebijakan Privasi</a>
+                <a href="#" onclick="alert('Tentang Pengguna')">Tentang Pengguna</a>
+            </div>
+            <div class="footer-version-info">
+                Versi Website: <span id="webVersion">1.0</span>
+            </div>
+        </footer>
+
+        <div class="modal-overlay" id="loginModal">
+            <div class="modal-box">
+                <h3 id="modalTitle">Login / Pendaftaran Anggota</h3>
+                <div id="loginFormContainer">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="userFullName" class="form-control" placeholder="Masukkan nama sesuai KTP/Kartu Anggota">
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Email</label>
+                        <input type="email" id="userEmail" class="form-control" placeholder="contoh@email.com">
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--gray-muted); margin-top: 5px;">
+                        *Bagi anggota baru atau lama, masukkan Nama dan Email. Password angka rahasia akan dikirimkan otomatis ke kotak masuk email Anda.
+                    </p>
+                    <div class="modal-actions">
+                        <button class="btn-action btn-cancel" id="closeLoginBtn">Batal</button>
+                        <button class="btn-action btn-confirm" id="submitLoginBtn">Dapatkan Akses</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // Import Firebase modules dari CDN resmi resmi v10
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, limit, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Konfigurasi Firebase Web SDK milik aplikasi Mading
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpUWUIzPXIZN6rrNtsIqcL6VfOE2RLVl0",
+            authDomain: "mading-cf676.firebaseapp.com",
+            projectId: "mading-cf676",
+            storageBucket: "mading-cf676.firebasestorage.app",
+            messagingSenderId: "72175203671",
+            appId: "1:72175203671:web:7a0676a55beb64bc96ba12",
+            measurementId: "G-590P9LLK7J"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Referensi Elemen DOM
+        const appLogo = document.getElementById('appLogo');
+        const infoBanner = document.getElementById('infoBanner');
+        const bannerTitle = document.getElementById('bannerTitle');
+        const articleContainer = document.getElementById('articleContainer');
+        const igLink = document.getElementById('igLink');
+        const childrenContainer = document.getElementById('childrenContainer');
+        const webVersion = document.getElementById('webVersion');
+
+        // Modal Elements
+        const loginModal = document.getElementById('loginModal');
+        const openLoginBtn = document.getElementById('openLoginBtn');
+        const closeLoginBtn = document.getElementById('closeLoginBtn');
+        const submitLoginBtn = document.getElementById('submitLoginBtn');
+
+        // Fungsi Menampilkan & Menyembunyikan Modal
+        openLoginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
+        closeLoginBtn.addEventListener('click', () => loginModal.style.display = 'none');
+
+        // Simulasi Alur Registrasi Anggota (Mengirim kode sandi angka ke email)
+        submitLoginBtn.addEventListener('click', () => {
+            const name = document.getElementById('userFullName').value;
+            const email = document.getElementById('userEmail').value;
+
+            if(!name || !email) {
+                alert("Harap lengkapi semua bidang.");
+                return;
+            }
+
+            alert(`Halo ${name},\nSistem autentikasi mendeteksi akun Anda. Sebuah password angka rahasia telah berhasil diproduksi dan dikirimkan ke alamat email: ${email}.\n\nSilakan periksa kotak masuk atau folder spam email Anda.`);
+            loginModal.style.display = 'none';
+        });
+
+        // AMBIL DATA DARI FIREBASE UNTUK INTEGRASI KONTROL ROOM ADMIN
+        async function fetchControlRoomData() {
+            try {
+                // 1. Ambil Pengaturan Umum (Logo, Banner Utama, Link Instagram, Versi)
+                const settingsRef = doc(db, "control_room", "main_config");
+                const settingsSnap = await getDoc(settingsRef);
+
+                if (settingsSnap.exists()) {
+                    const data = settingsSnap.data();
+                    
+                    // Update Logo jika Base64 tersedia
+                    if(data.logoBase64) {
+                        appLogo.src = data.logoBase64;
+                    }
+                    
+                    // Update Banner Utama
+                    if(data.bannerBase64) {
+                        infoBanner.style.background = `url('${data.bannerBase64}') center/cover no-repeat`;
+                    }
+                    if(data.bannerTitle) {
+                        bannerTitle.innerText = data.bannerTitle;
+                    }
+
+                    // Update Tautan Instagram
+                    if(data.instagramUrl) {
+                        igLink.href = data.instagramUrl;
+                    }
+
+                    // Update Nomor Versi Otomatis
+                    if(data.version) {
+                        webVersion.innerText = data.version;
+                    }
+                } else {
+                    // Fallback jika dokumen data awal belum diatur oleh admin di Firebase
+                    bannerTitle.innerText = "Selamat Datang di Satu Pena Temanggung";
+                    webVersion.innerText = "1.0";
+                }
+
+                // 2. Ambil List Artikel Terbaru
+                const articlesQuery = query(collection(db, "articles"), orderBy("createdAt", "desc"), limit(3));
+                const querySnapshot = await getDocs(articlesQuery);
+                
+                articleContainer.innerHTML = ""; // Bersihkan placeholder
+                if(querySnapshot.empty) {
+                    articleContainer.innerHTML = "<p style='font-size:0.85rem; color:var(--gray-muted);'>Belum ada artikel yang dipublikasikan.</p>";
+                } else {
+                    querySnapshot.forEach((doc) => {
+                        const article = doc.data();
+                        const card = document.createElement('div');
+                        card.className = "item-card";
+                        card.innerHTML = `
+                            <img class="item-thumb" src="${article.imageBase64 || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTE5IDE5SDVWNWg3VjNINWExIDEgMCAwIDAtMSAxdjE0YTEgMSAwIDAgMCAxIDFoMTRhMSAxIDAgMCAwIDEtMVYxaC0ydjZ6bS03LTYgbDMtM2w0IDR2OUgxMnoiLz48L3N2Zz4='}">
+                            <div class="item-details">
+                                <h3>${article.title || 'Judul Artikel'}</h3>
+                                <div class="item-meta">${article.date || 'Baru Saja'} • Oleh Admin</div>
+                            </div>
+                        `;
+                        articleContainer.appendChild(card);
+                    });
+                }
+
+                // 3. Ambil Data Konten Khusus Anak
+                const kidsQuery = query(collection(db, "children_content"), orderBy("createdAt", "desc"), limit(1));
+                const kidsSnapshot = await getDocs(kidsQuery);
+                
+                childrenContainer.innerHTML = "";
+                if(kidsSnapshot.empty) {
+                    childrenContainer.innerHTML = "<p style='font-size:0.85rem; color:#F57F17;'>Kumpulan karya kreatif anak-anak akan segera hadir di sini!</p>";
+                } else {
+                    kidsSnapshot.forEach((doc) => {
+                        const kidsData = doc.data();
+                        childrenContainer.innerHTML = `
+                            <div style="font-weight:700; margin-bottom:5px; color:#E65100;">${kidsData.title || 'Karya Cilik'}</div>
+                            <p style="font-size:0.85rem; color:#5D4037; margin-bottom:10px;">${kidsData.description || ''}</p>
+                            ${kidsData.posterBase64 ? `<img src="${kidsData.posterBase64}" style="width:100%; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">` : ''}
+                        `;
+                    });
+                }
+
+            } catch (error) {
+                console.error("Gagal memuat data dari Firebase: ", error);
+                // Handler jika koneksi gagal / collections belum dibuat sama sekali
+                bannerTitle.innerText = "Gagal memuat info terbaru.";
+                articleContainer.innerHTML = "<p style='font-size:0.85rem; color:red;'>Gagal sinkronisasi data.</p>";
+            }
+        }
+
+        // Jalankan pengambilan data ketika komponen halaman telah siap
+        window.addEventListener('DOMContentLoaded', fetchControlRoomData);
+    </script>
+</body>
+</html>
