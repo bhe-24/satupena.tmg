@@ -238,6 +238,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // =========================================
+        // DAFTAR EMAIL ADMIN (BARU)
+        // Email di bawah ini otomatis dapat role "admin" dan diarahkan ke admin/index.html
+        // =========================================
+        const ADMIN_EMAILS = [
+            "ragamliterasi@gmail.com", // Admin utama
+            "satupenatmg@gmail.com"    // Admin kedua
+        ];
+
         // 1. Ambil Parameter Email dari URL
         const urlParams = new URLSearchParams(window.location.search);
         const userEmail = urlParams.get('email');
@@ -301,12 +310,17 @@
                     // Cocokkan kode yang diinput dengan yang ada di database
                     if (data.kodeAkses === enteredCode) {
                         
+                        // BARU: Tentukan role berdasarkan daftar email admin
+                        const emailLower = data.emailUser.toLowerCase();
+                        const isAdmin = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(emailLower);
+                        const finalRole = isAdmin ? "admin" : "anggota";
+
                         // KODE BENAR! -> Buat akun permanen di koleksi 'users'
                         const userRef = doc(db, "users", userEmail.toLowerCase());
                         await setDoc(userRef, {
                             namaLengkap: data.namaLengkap,
                             emailUser: data.emailUser,
-                            role: "anggota", // Default role
+                            role: finalRole,
                             terdaftarPada: serverTimestamp()
                         });
 
@@ -317,20 +331,23 @@
                         localStorage.setItem('satuPenaLoggedIn', 'true');
                         localStorage.setItem('satuPenaUserData', JSON.stringify({
                             nama: data.namaLengkap,
-                            email: data.emailUser
+                            email: data.emailUser,
+                            role: finalRole
                         }));
 
-                        // Tutup loading & tampilkan sukses
+                        // Tutup loading & tampilkan sukses, arahkan sesuai role
                         Swal.fire({
                             icon: 'success',
                             title: 'Pendaftaran Berhasil!',
-                            text: 'Selamat datang di ruang media Satu Pena Temanggung.',
+                            text: isAdmin
+                                ? 'Selamat datang, Admin. Anda akan diarahkan ke Dasbor Admin.'
+                                : 'Selamat datang di ruang media Satu Pena Temanggung.',
                             customClass: { popup: 'swal-satu-pena', confirmButton: 'swal-confirm-custom' },
                             buttonsStyling: false,
-                            confirmButtonText: 'Masuk Dasbor'
+                            confirmButtonText: isAdmin ? 'Masuk Dasbor Admin' : 'Masuk Dasbor'
                         }).then(() => {
-                            // Arahkan ke halaman user
-                            window.location.href = "user.html";
+                            // Arahkan sesuai role: admin -> admin/index.html, anggota -> user.html
+                            window.location.href = isAdmin ? "admin/index.html" : "user.html";
                         });
 
                     } else {
