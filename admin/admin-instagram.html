@@ -56,7 +56,7 @@
             font-size: 0.85rem; font-weight: 700; cursor: pointer; margin-top: 5px;
         }
 
-        /* === AREA CANVAS PREVIEW (SUPER PRESISI) === */
+        /* === AREA CANVAS PREVIEW (KALIBRASI PRESISI) === */
         .preview-section { padding: 0 20px 20px 20px; }
         
         .poster-wrapper {
@@ -71,46 +71,46 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* 1. LAYER FOTO UTAMA (Disesuaikan agar masuk ke DALAM kotak frame) */
+        /* 1. LAYER FOTO UTAMA (Pas di dalam frame putih tengah) */
         .layer-main-photo {
             position: absolute;
-            top: 26%;         /* Diturunkan agar tidak nabrak hashtag */
-            left: 19.5%;      /* Digeser ke kanan agar masuk bingkai dalam */
-            width: 58%;       /* Diperkecil agar pas dalam kotak */
-            height: 34.5%;    /* Diperpendek agar tidak menutupi tulisan bawah */
+            top: 24.5%;      /* Diturunkan agar pas di bawah tagar */
+            left: 20.5%;     /* Digeser ke kanan agar masuk bingkai putih */
+            width: 56.5%;    /* Diperkecil agar tidak menabrak bingkai kanan */
+            height: 30.5%;   /* Diperpendek agar tidak menutupi tulisan SATUPENA */
             object-fit: cover;
-            border-radius: 4px; /* Sudut tumpul tipis agar terlihat natural */
-            transform: rotate(-4.5deg); /* Kemiringan frame */
+            border-radius: 4px;
+            transform: rotate(-4.5deg);
             z-index: 1;
         }
 
-        /* 2. LAYER FOTO KEDUA (Frame Kecil Kiri Bawah) */
+        /* 2. LAYER FOTO KEDUA (Pas di dalam frame miring kiri bawah) */
         .layer-side-photo {
             position: absolute;
-            top: 62.5%;
-            left: 1%;
-            width: 29%;
-            height: 19%;
+            top: 59%;        /* Dinaikkan agar pas masuk ke bingkai miring */
+            left: -12%;      /* Digeser jauh ke kiri */
+            width: 36%;      /* Diperbesar sedikit */
+            height: 26%;
             object-fit: cover;
-            border-radius: 6px;
-            transform: rotate(35deg); /* Kemiringan frame bawah */
+            border-radius: 8px;
+            transform: rotate(33deg);
             z-index: 2;
         }
 
-        /* 3. LAYER JUDUL (Bawah Tengah, Di Bawah Tulisan Media Satupena) */
+        /* 3. LAYER JUDUL (Di bawah watermark SATUPENA TEMANGGUNG) */
         .layer-title {
             position: absolute;
-            top: 72%;
-            left: 19%;
-            width: 60%;
+            top: 67%;        /* Dinaikkan agar tepat di bawah watermark */
+            left: 20.5%;
+            width: 57%;
             height: 15%;
             display: flex;
-            align-items: flex-start; /* Dimulai dari atas ruang kosong */
+            align-items: flex-start;
             justify-content: center;
             text-align: center;
             color: #593C30;
             font-weight: 800;
-            font-size: 1.25rem;
+            font-size: 1.15rem; /* Ukuran font disesuaikan agar rapi */
             line-height: 1.4;
             transform: rotate(-4.5deg);
             z-index: 4;
@@ -144,7 +144,7 @@
             <div class="form-group" style="background: #FFFDE7; border-color: #FFF59D;">
                 <label class="form-label" style="color: #F57F17;">1. Pasang Latar Belakang (Template)</label>
                 <p style="font-size:0.75rem; color:#757575; margin-bottom:8px;">
-                    Unggah gambar template kosong. Sistem akan menyimpannya secara paten.
+                    Unggah gambar template kosong Anda.
                 </p>
                 <button class="btn-upload-template" onclick="document.getElementById('inputTemplate').click()">
                     🖼️ Ubah / Unggah Template Kosong
@@ -199,12 +199,6 @@
             posterRenderArea.style.backgroundImage = `url('${savedTemplate}')`;
         } else {
             posterRenderArea.style.backgroundColor = "#EFEBE9";
-            Swal.fire({
-                icon: 'info',
-                title: 'Template Belum Dipasang',
-                text: 'Silakan unggah gambar template "kosongan" terlebih dahulu pada tombol paling atas.',
-                confirmButtonColor: '#3E2723'
-            });
         }
 
         document.getElementById('inputTemplate').addEventListener('change', function(e) {
@@ -219,7 +213,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Template Terpasang!',
-                        text: 'Latar belakang telah disimpan secara paten.',
+                        text: 'Latar belakang telah disimpan.',
                         timer: 2000,
                         showConfirmButton: false
                     });
@@ -232,13 +226,11 @@
         // 2. PEMBARUAN TEKS & FOTO REAL-TIME
         // ==========================================
         
-        // Judul (Otomatis deteksi baris baru)
         document.getElementById('inputTitle').addEventListener('input', function() {
             const formattedText = this.value.replace(/\n/g, '<br>');
             document.getElementById('textTitle').innerHTML = formattedText;
         });
 
-        // Fungsi Helper untuk Foto
         function handlePhotoUpload(inputId, imgElementId) {
             document.getElementById(inputId).addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -263,10 +255,6 @@
                 Swal.fire('Template Kosong', 'Harap unggah latar belakang (template) terlebih dahulu.', 'warning');
                 return;
             }
-            if (document.getElementById('inputFileMain').files.length === 0 || document.getElementById('inputFileSide').files.length === 0) {
-                Swal.fire('Foto Belum Lengkap', 'Pastikan Foto Utama dan Foto Tambahan sudah diunggah.', 'warning');
-                return;
-            }
 
             Swal.fire({
                 title: 'Memproses Gambar...',
@@ -289,7 +277,6 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil Diunduh!',
-                    text: 'Poster siap dibagikan ke Instagram.',
                     confirmButtonColor: '#3E2723'
                 });
             }).catch(error => {
